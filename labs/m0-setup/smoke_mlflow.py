@@ -7,8 +7,8 @@ import os
 # Configuration depuis .env
 mlflow.set_tracking_uri(os.getenv("MLFLOW_TRACKING_URI", "http://localhost:5000"))
 
-# Créer une expérience de test
-experiment_name = "hello-mlops"
+# Créer une expérience "smoke-test" (mich hello-mlops!)
+experiment_name = "smoke-test"
 try:
     experiment_id = mlflow.create_experiment(experiment_name)
 except Exception:
@@ -16,20 +16,21 @@ except Exception:
 
 mlflow.set_experiment(experiment_name)
 
-# Run avec un artefact
-with mlflow.start_run(run_name="smoke-test"):
+# Run avec run_name="hello-mlops" (mich smoke-test!)
+with mlflow.start_run(run_name="hello-mlops"):
     mlflow.log_param("test", "smoke")
-    mlflow.log_metric("dummy", 42)
+    mlflow.log_metric("accuracy", 0.42)  # Metric accuracy = 0.42
     
-    # Créer un fichier temporaire nommé hello.txt
+    # Créer un fichier hello.txt
     artifact_file = "/tmp/hello.txt"
     with open(artifact_file, 'w') as f:
         f.write("Hello from MLflow smoke test!\n")
     
-    # Log artifact (devient hello.txt à la racine)
+    # Log artifact
     mlflow.log_artifact(artifact_file)
     os.unlink(artifact_file)
     
     print("✅ MLflow run créé avec succès!")
     print(f"   Experiment: {experiment_name}")
+    print(f"   Run: hello-mlops")
     print(f"   Run ID: {mlflow.active_run().info.run_id}")
