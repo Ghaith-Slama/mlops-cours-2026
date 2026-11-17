@@ -2,7 +2,6 @@
 """Smoke test MLflow : création d'un run avec un artefact."""
 
 import mlflow
-import tempfile
 import os
 
 # Configuration depuis .env
@@ -22,14 +21,14 @@ with mlflow.start_run(run_name="smoke-test"):
     mlflow.log_param("test", "smoke")
     mlflow.log_metric("dummy", 42)
     
-    # Créer et logger un artefact SANS subfolder
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.txt', delete=False) as f:
+    # Créer un fichier temporaire nommé hello.txt
+    artifact_file = "/tmp/hello.txt"
+    with open(artifact_file, 'w') as f:
         f.write("Hello from MLflow smoke test!\n")
-        artifact_path = f.name
     
-    # Log as "hello.txt" directly (no subfolder)
-    mlflow.log_artifact(artifact_path, artifact_path="hello.txt")
-    os.unlink(artifact_path)
+    # Log artifact (devient hello.txt à la racine)
+    mlflow.log_artifact(artifact_file)
+    os.unlink(artifact_file)
     
     print("✅ MLflow run créé avec succès!")
     print(f"   Experiment: {experiment_name}")
