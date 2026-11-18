@@ -1,8 +1,7 @@
 """Evaluate trained model on test set."""
 import json
-import pickle
+import mlflow
 from pathlib import Path
-
 from src.dataset_config import load_config
 from sklearn.metrics import roc_auc_score, average_precision_score, precision_score, recall_score
 
@@ -12,12 +11,11 @@ def main():
     # Load test data
     X_test, y_test = cfg.read_xy("data/processed/test.csv")
     
-    # Load model
-    with open("models/model.pkl", "rb") as f:
-        pipeline = pickle.load(f)
+    # Load model from MLflow format directory
+    model = mlflow.sklearn.load_model("models/model")
     
     # Predict
-    y_pred_proba = pipeline.predict_proba(X_test)[:, 1]
+    y_pred_proba = model.predict_proba(X_test)[:, 1]
     y_pred = (y_pred_proba >= 0.5).astype(int)
     
     # Compute metrics

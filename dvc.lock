@@ -104,3 +104,100 @@ stages:
       hash: md5
       md5: 77f6be6148e414198654bf8ff4e12d13
       size: 114356
+  train:
+    cmd: python -m src.train
+    deps:
+    - path: data/processed/test.csv
+      hash: md5
+      md5: 80c14461d82ef43b1897f9431f18922a
+      size: 28866
+    - path: data/processed/train.csv
+      hash: md5
+      md5: 77f6be6148e414198654bf8ff4e12d13
+      size: 114356
+    - path: src/dataset_config.py
+      hash: md5
+      md5: 3dfbc7152adfcc892ce94654d08a25e0
+      size: 8225
+    - path: src/train.py
+      hash: md5
+      md5: 0daf4fb53c2cb5d1af153f40142abdc5
+      size: 8886
+    params:
+      params.yaml:
+        train:
+          model: logistic_regression
+          C: 0.1
+          class_weight: balanced
+          n_estimators: 200
+          max_depth: 8
+          learning_rate: 0.1
+          random_state: 42
+      dataset.yaml:
+        features:
+          numeric:
+          - duration
+          - credit_amount
+          - installment_commitment
+          - residence_since
+          - age
+          - existing_credits
+          - num_dependents
+          categorical:
+          - checking_status
+          - credit_history
+          - purpose
+          - savings_status
+          - employment
+          - personal_status
+          - other_parties
+          - property_magnitude
+          - other_payment_plans
+          - housing
+          - job
+          - own_telephone
+          - foreign_worker
+        metrics:
+          primary: roc_auc
+          promotion_threshold: 0.7
+          cost_matrix:
+            false_negative: 5
+            false_positive: 1
+        target:
+          column: credit_risk
+          positive_class: bad
+    outs:
+    - path: models/model
+      hash: md5
+      md5: 1295dd6410c6ad7c8d4586b1589a11d3.dir
+      size: 282182
+      nfiles: 5
+    - path: reports/metrics.json
+      hash: md5
+      md5: f5609a368d2a59bc695c20651d8d080d
+      size: 218
+  evaluate:
+    cmd: python -m src.evaluate
+    deps:
+    - path: data/processed/test.csv
+      hash: md5
+      md5: 80c14461d82ef43b1897f9431f18922a
+      size: 28866
+    - path: models/model
+      hash: md5
+      md5: 1295dd6410c6ad7c8d4586b1589a11d3.dir
+      size: 282182
+      nfiles: 5
+    - path: src/dataset_config.py
+      hash: md5
+      md5: 3dfbc7152adfcc892ce94654d08a25e0
+      size: 8225
+    - path: src/evaluate.py
+      hash: md5
+      md5: b89c8d015cddea8b0702af15d46e7b69
+      size: 1238
+    outs:
+    - path: reports/test_metrics.json
+      hash: md5
+      md5: d2c4ebd149b982c6d89165784ae185bd
+      size: 160
