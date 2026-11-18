@@ -183,6 +183,12 @@ def main() -> None:
             metadata={"mlflow_run_id": run.info.run_id, "decision_threshold": threshold},
         )
 
+        # Save metrics to reports/metrics.json for DVC
+        Path("reports").mkdir(exist_ok=True)
+        with open("reports/metrics.json", "w") as f:
+            import json
+            json.dump(metrics, f, indent=2)
+
         summary = ", ".join(f"{k}={v:.3f}" for k, v in metrics.items() if k != "business_cost")
         cost = metrics["business_cost"]
         print(f"{run_name}: seuil={threshold:.3f}, {summary}, business_cost={cost:.0f}")
