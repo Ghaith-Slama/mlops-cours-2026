@@ -11,3 +11,46 @@ stages:
       - target
     outs:
     - data/raw/dataset.csv
+  prepare:
+    cmd: python -m src.prepare
+    deps:
+    - data/raw/dataset.csv
+    - src/dataset_config.py
+    - src/prepare.py
+    params:
+    - prepare
+    - dataset.yaml:
+      - features
+      - split
+      - target
+    outs:
+    - data/processed/test.csv
+    - data/processed/train.csv
+  train:
+    cmd: python -m src.train
+    deps:
+    - data/processed/test.csv
+    - data/processed/train.csv
+    - src/dataset_config.py
+    - src/train.py
+    params:
+    - train
+    - dataset.yaml:
+      - features
+      - metrics
+      - target
+    outs:
+    - models/model.pkl
+    metrics:
+    - reports/metrics.json:
+        cache: false
+  evaluate:
+    cmd: python -m src.evaluate
+    deps:
+    - data/processed/test.csv
+    - models/model.pkl
+    - src/dataset_config.py
+    - src/evaluate.py
+    metrics:
+    - reports/test_metrics.json:
+        cache: false
